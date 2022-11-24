@@ -8,7 +8,7 @@
 // change file to previous version (opposite operation)
 
 use clap::{Parser, Subcommand};
-use std::{fs::{self, create_dir, File}, io::{Write, Read}};
+use std::{fs::{self, create_dir, File, OpenOptions}, io::{Write, Read}};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -43,7 +43,11 @@ fn main() {
         }
         SubCommand::Add { file } => {
             let file_name = file.clone();
-            let mut tracked_files = File::create(".rift/flagship").expect("Failed to open .rift/flagship file\nRun `rift init` to initialize a rift repository");
+            let mut tracked_files = OpenOptions::new()
+                .read(true)
+                .append(true)
+                .open(".rift/flagship")
+                .expect("Failed to open .rift/flagship file\nRun `rift init` to initialize a rift repository");
             
             if fs::read_to_string(".rift/flagship").unwrap().contains(&file_name) {
                 println!("File already tracked");
@@ -53,7 +57,7 @@ fn main() {
             }
         },
         SubCommand::Knot { message } => {
-            unimplemented!()
+            unimplemented!("Knot command not implemented yet");
         },
         SubCommand::Status => {
             unimplemented!()
